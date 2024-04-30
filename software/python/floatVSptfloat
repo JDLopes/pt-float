@@ -1,0 +1,243 @@
+#!/usr/bin/python3
+#
+# f l o a t V S p t f l o a t
+#
+
+import sys
+import ieee754
+import ptfloat
+
+def msb(width):
+    return 1 << (width-1)
+
+#
+# Format (float32, ptfloat)
+#
+FMT = "ptfloat"
+
+#
+# Precision
+#
+
+P = "8"
+
+def fprintf(fw, fmt, *args):
+    lst = getFmtLst(fmt)
+    fmt = fmt.replace("%E", "%s")
+    for i in range(len(lst)) :
+        if (lst[i] == '%E') : args = args[:i] + (base2(args[i]),) + args[i+1:]
+    fmt = fmt.replace("%e", "%."+P+"e")
+    fmt = fmt.replace("%f", "%."+P+"f").replace("%F", "%."+P+"F")
+    print(fmt % args, end='', file=fw)
+    return
+
+def printf(fmt, *args):
+    fprintf(sys.stdout, fmt, *args)
+    return
+
+def getFmtLst(fmt):
+    lst = fmt.replace(',', '').replace('\n', '').replace('\r', '').split()
+    ret = []
+    for item in lst :
+        if (item.find('%') != -1) : ret.append(item)
+    return ret
+
+def dec2str(val):
+    p = 4
+    res = str(val).replace('E','e')
+    fmt = '{0:.'+str(p)+'f}'
+    return fmt.format(float(res[:res.find('.')+p+2]))+res[res.find('e'):]
+
+def base2(num_d):
+    if (num_d == 0.0) : return '0.0'
+    if (ieee754.doubleIsInf(num_d)) : return 'inf'
+    if (ieee754.doubleIsNan(num_d)) : return 'nan'
+    exp = ieee754.getDoubleExp(num_d)
+    man = ieee754.getDoubleMan(num_d)
+    man_b10 = man*2**(-ieee754.FP_DP_F_W)
+    if (ieee754.getDoubleSign(num_d)) : man_b10 *= -1
+    fmt = '{0:.'+P+'f}'
+    res = fmt.format(man_b10)
+    return res+'*2**'+str(exp)
+
+def compareFormats(fr_r, fr_t, fw_o, fw_s):
+    maxDiff = 0.0
+    maxDiffRel = 0.0
+    maxDiffRelMan = 0.0
+    meanDiff = 0.0
+    meanDiffRel = 0.0
+    meanDiffRelMan = 0.0
+    mwMaxDiff = 0
+    mwMaxDiffRel = 0
+    mwMaxDiffRelMan = 0
+    diffs = 0
+    i = 0
+    
+    line_r = fr_r.readline()
+    line_t = fr_t.readline()
+    while (line_r != "" and line_t != "") :
+        num_r = float(line_r.split('=')[-1])
+        num_t = float(line_t.split('=')[-1])
+        
+        if (ieee754.doubleIsNan(num_t)) :
+            fprintf(fw_o, "i = %d, float64 = %E, %s = nan, diff = -, diffRel = -, mw = %d\n", i, num_r, FMT, ieee754.FP_SP_F_W)
+            diffs+=1
+            num_r = 0.0
+            num_t = 0.0
+        
+        if (ieee754.doubleIsInf(num_t)) :
+            fprintf(fw_o, "i = %d, float64 = %E, %s = inf, diff = -, diffRel = -, mw = %d\n", i, num_r, FMT, ieee754.FP_SP_F_W)
+            diffs+=1
+            num_r = 0.0
+            num_t = 0.0
+        
+        if (num_r != num_t) :
+            if (ieee754.getDoubleMan(num_t) & msb(ieee754.FP_DP_MAN_W) and FMT == "ptfloat") : incr = 1
+            else : incr = 0
+            exp = ieee754.getDoubleExp(num_t) + incr
+            
+            if (FMT == "ptfloat") : mw = ptfloat.cmw(exp)
+            else : mw = ieee754.FP_SP_F_W
+            
+            diff = abs(num_t - num_r)
+            diffRel = diff / abs(num_r)
+            diffRelMan = diff / 2**exp
+            
+            meanDiff += diff
+            meanDiffRel += diffRel
+            meanDiffRelMan += diffRelMan
+            
+            if (maxDiff < diff) :
+                maxDiff = diff
+                mwMaxDiff = mw
+            if (maxDiffRel < diffRel) :
+                maxDiffRel = diffRel
+                mwMaxDiffRel = mw
+            if (maxDiffRelMan < diffRelMan) :
+                maxDiffRelMan = diffRelMan
+                mwMaxDiffRelMan = mw
+            
+            fprintf(fw_o, "i = %d, float64 = %E, %s = %E, diff = %E, diffRel = %E, diffRelMan = %E, mw = %d\n", i, num_r, FMT, num_t, diff, diffRel, diffRelMan, mw)
+            
+            diffs+=1
+        
+        if (fw_s != None and line_t.find('op1') != -1) :
+            op1_r = float(line_r.split("op1")[1].split('=')[1].split(' ')[1])
+            op1_t = float(line_t.split("op1")[1].split('=')[1].split(' ')[1])
+            op1Rel = float('inf')
+            if (op1_r) : op1Rel = abs((op1_t - op1_r) / op1_r)
+            
+            op2_r = float(line_r.split("op2")[1].split('=')[1].split(' ')[1])
+            op2_t = float(line_t.split("op2")[1].split('=')[1].split(' ')[1])
+            op2Rel = float('inf')
+            if (op2_r) : op2Rel = abs((op2_t - op2_r) / op2_r)
+            
+            res_r = num_r
+            res_t = num_t
+            resRel = float('inf')
+            if (res_r) : resRel = abs((res_t - res_r) / res_r)
+            
+            errRel = float('inf')
+            if (op1_r+op2_r) : errRel = op1Rel*op1_r/(op1_r+op2_r) + op2Rel*op2_r/(op1_r+op2_r)
+            
+            fprintf(fw_s, "i = %d\n", i)
+            fprintf(fw_s, "A = %E, %E\n", op1_t, op1Rel)
+            fprintf(fw_s, "B = %E, %E\n", op2_t, op2Rel)
+            fprintf(fw_s, "C = %E, %E, %E\n\n", res_t, resRel, errRel)
+        
+        i+=1
+        line_r = fr_r.readline()
+        line_t = fr_t.readline()
+    
+    if (i) :
+        meanDiff /= i
+        meanDiffRel /= i
+    
+    fprintf(fw_o, "maxDiff = %E, mw = %d\n", maxDiff, mwMaxDiff)
+    fprintf(fw_o, "maxDiffRel = %E, mw = %d\n", maxDiffRel, mwMaxDiffRel)
+    fprintf(fw_o, "maxDiffRelMan = %E, mw = %d\n", maxDiffRelMan, mwMaxDiffRelMan)
+    fprintf(fw_o, "meanDiff = %E\n", meanDiff)
+    fprintf(fw_o, "meanDiffRel = %E\n", meanDiffRel)
+    fprintf(fw_o, "meanDiffRelMan = %E\n", meanDiffRelMan)
+    fprintf(fw_o, "diffs = %d\n", diffs)
+    fprintf(fw_o, "total = %d\n", i)
+    
+    return
+
+def usage(message):
+    print("usage: %s" % message)
+    print("       ./floatVSptfloat -d <double file> -f <float file> -ptf <PT-Float file> -o <output file> -p <precision> -dw <data width> -eww <exponent width width> -ptfw <ptfloat width>")
+    sys.exit(1)
+
+def main():
+    global FMT
+    global P
+    
+    # Defaults
+    data_w = 32
+    ew_w = 4
+    ptfloat_w = 32
+    
+    refFile = ""
+    trgtFile = ""
+    outputFile = ""
+    summaryFile = "floatVSptfloat.summary"
+    
+    # Process input arguments
+    if (len(sys.argv) <= 4) : usage("too few arguments")
+
+    i = 1
+    while (i < len(sys.argv)) :
+        if (sys.argv[i] == "-d") :
+            refFile = sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i] == "-f") :
+            trgtFile = sys.argv[i+1]
+            FMT = "float32"
+            i+=1
+        elif (sys.argv[i] == "-ptf") :
+            trgtFile = sys.argv[i+1]
+            FMT = "ptfloat"
+            i+=1
+        elif (sys.argv[i] == "-o") :
+            outputFile = sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i] == "-s") :
+            summaryFile = sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i] == "-p") :
+            P = sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i] == "-dw") :
+            data_w = int(sys.argv[i+1])
+            i+=1
+        elif (sys.argv[i] == "-eww") :
+            ew_w = int(sys.argv[i+1])
+            i+=1
+        elif (sys.argv[i] == "-ptfw") :
+            ptfloat_w = int(sys.argv[i+1])
+            i+=1
+        else : usage("unexpected argument '%s'" % sys.argv[i])
+        i+=1
+    
+    if (refFile == "" or trgtFile == "") : usage("too few arguments")
+    
+    ptfloat.notation(data_w, ew_w, ptfloat_w)
+    
+    fr_r = open(refFile, "r")
+    fr_t = open(trgtFile, "r")
+    if (outputFile != "") : fw_o = open(outputFile, "w")
+    else : fw_o = sys.stdout
+    if (summaryFile != "") : fw_s = open(summaryFile, "w")
+    else : fw_s = None
+    
+    compareFormats(fr_r, fr_t, fw_o, fw_s)
+    
+    fr_r.close()
+    fr_t.close()
+    fw_o.close()
+    fw_s.close()
+    
+    sys.exit(0)
+
+if __name__ == "__main__" : main()
