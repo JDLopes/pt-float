@@ -26,13 +26,13 @@ PTFLOAT_OBJ:=$(PTFLOAT_OBJ:.cpp=.o)
 $(PTFLOAT_SW_DIR)/pc/ptfloat.a: $(PTFLOAT_OBJ)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(PTFLOAT_SW_DIR)/pc/%.o: $(PTFLOAT_SW_DIR)/pc/%.c
+$(PTFLOAT_SW_DIR)/%.o: $(PTFLOAT_SW_DIR)/%.c
 	$(CPP) -Wextra -O3 $(INCLUDE) -c $< -o $@
 
-$(PTFLOAT_SW_DIR)/pc/%.o: $(PTFLOAT_SW_DIR)/pc/%.cpp
+$(PTFLOAT_SW_DIR)/%.o: $(PTFLOAT_SW_DIR)/%.cpp
 	$(CPP) -Wextra -O3 $(INCLUDE) -c $< -o $@
 
 clean-ptfloat:
-	rm -f $(PTFLOAT_SW_DIR)/pc/ptfloat.a $(PTFLOAT_SW_DIR)/pc/*.o
+	rm -f $(PTFLOAT_SW_DIR)/pc/ptfloat.a $(PTFLOAT_SW_DIR)/pc/*.o $(PTFLOAT_SW_DIR)/ieee/*.o
 
 .PHONY: clean-ptfloat

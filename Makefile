@@ -6,6 +6,8 @@ PTFLOAT_TRG:=ptfloat
 CPP=g++
 AR=ar
 
+ARFLAGS=rcs
+
 ifneq ($(findstring test, $(MAKECMDGOALS)),)
 TEST_PTFLOAT=1
 endif
@@ -16,9 +18,9 @@ COMMON+=$(INCLUDE)
 DATA_W=$(shell grep "define DATA_W" $(PTFLOAT_SW_DIR)/iob_ptfloat.h | awk '{print $$3}')
 EW_W=$(shell grep "define EW_W" $(PTFLOAT_SW_DIR)/iob_ptfloat.h | awk '{print $$3}')
 
-test: sw-clean $(PTFLOAT_TRG)
-	./$(PTFLOAT_TRG) -i data.in -w weights.in -d ./$@-double.out -f ./$@-float.out -ptf ./$@-ptfloat.out
-#	./$(PTFLOAT_TRG) -d ./$@-double.out -f ./$@-float.out -ptf ./$@-ptfloat.out
+sw-test: sw-clean $(PTFLOAT_TRG)
+	./$(PTFLOAT_TRG) -i data.in -w weights.in -d ./$@-double.out -f ./$@-float.out -p ./$@-ptfloat.out
+#	./$(PTFLOAT_TRG) -d ./$@-double.out -f ./$@-float.out -p ./$@-ptfloat.out
 	$(PTFLOAT_PYTHON_DIR)/floatVSptfloat -d ./$@-double.out -f ./$@-float.out -o ./float-floatVSptfloat.out -p 16 -dw $(DATA_W) -eww $(EW_W)
 	$(PTFLOAT_PYTHON_DIR)/floatVSptfloat -d ./$@-double.out -ptf ./$@-ptfloat.out -o ./ptfloat-floatVSptfloat.out -p 16 -dw $(DATA_W) -eww $(EW_W)
 
@@ -27,5 +29,10 @@ $(PTFLOAT_TRG): $(PTFLOAT_SW_DIR)/pc/$(PTFLOAT_TRG).a
 
 sw-clean: clean-ptfloat
 	rm -f $(PTFLOAT_TRG)
+	rm -rf $(PTFLOAT_PYTHON_DIR)/__pycache__
 
-.PHONY: sw-clean test
+clean: sw-clean
+	rm -f *.o *.out *.summary
+
+.PHONY: sw-test sw-clean\
+	clean

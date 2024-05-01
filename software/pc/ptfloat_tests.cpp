@@ -177,10 +177,10 @@ unsigned int read_input(char *inputFile, double **data) {
   }
 
   int n;
-  fread(&n, sizeof(int), 1, fp);
+  int ret = fread(&n, sizeof(int), 1, fp);
 
   float *data_f = (float *) malloc(sizeof(float)*n);
-  fread(data_f, sizeof(float), n, fp);
+  ret = fread(data_f, sizeof(float), n, fp);
 
   *data = (double *) malloc(sizeof(double)*n);
   memcpy(*data, data_f, sizeof(float)*n);
