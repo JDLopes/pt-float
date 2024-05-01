@@ -1,38 +1,36 @@
-PTFLOAT_SW_DIR=$(PTFLOAT_DIR)/software
-
-TEST?=0
+TEST_PTFLOAT?=0
 
 # Search paths
-INCLUDE+=-I$(PTFLOAT_SW_DIR)
-INCLUDE+=-I$(PTFLOAT_SW_DIR)/pc
-INCLUDE+=-I$(PTFLOAT_SW_DIR)/ieee
+INCLUDE+=-I$(SW_DIR)
+INCLUDE+=-I$(SW_DIR)/pc
+INCLUDE+=-I$(SW_DIR)/ieee
 
 # Headers
-HDR+=$(PTFLOAT_SW_DIR)/iob_ptfloat.h
-HDR+=$(PTFLOAT_SW_DIR)/pc/ptfloat.h
-HDR+=$(PTFLOAT_SW_DIR)/ieee/ieee754.h
+HDR+=$(SW_DIR)/iob_ptfloat.h
+HDR+=$(SW_DIR)/pc/ptfloat.h
+HDR+=$(SW_DIR)/ieee/ieee754.h
 
 # Sources
-SRC+=$(PTFLOAT_SW_DIR)/pc/iob_ptfloat.c
-SRC+=$(PTFLOAT_SW_DIR)/ieee/ieee754.c
-SRC+=$(PTFLOAT_SW_DIR)/pc/ptfloat.cpp
+SRC+=$(SW_DIR)/pc/iob_ptfloat.c
+SRC+=$(SW_DIR)/ieee/ieee754.c
+SRC+=$(SW_DIR)/pc/ptfloat.cpp
 ifeq ($(TEST_PTFLOAT),1)
-SRC+=$(PTFLOAT_SW_DIR)/pc/ptfloat_tests.cpp
+SRC+=$(SW_DIR)/pc/ptfloat_tests.cpp
 endif
 
 PTFLOAT_OBJ:=$(SRC:.c=.o)
 PTFLOAT_OBJ:=$(PTFLOAT_OBJ:.cpp=.o)
 
-$(PTFLOAT_SW_DIR)/pc/ptfloat.a: $(PTFLOAT_OBJ)
+$(SW_DIR)/pc/ptfloat.a: $(PTFLOAT_OBJ)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(PTFLOAT_SW_DIR)/%.o: $(PTFLOAT_SW_DIR)/%.c
+$(SW_DIR)/%.o: $(SW_DIR)/%.c
 	$(CPP) -Wextra -O3 $(INCLUDE) -c $< -o $@
 
-$(PTFLOAT_SW_DIR)/%.o: $(PTFLOAT_SW_DIR)/%.cpp
+$(SW_DIR)/%.o: $(SW_DIR)/%.cpp
 	$(CPP) -Wextra -O3 $(INCLUDE) -c $< -o $@
 
 clean-ptfloat:
-	rm -f $(PTFLOAT_SW_DIR)/pc/ptfloat.a $(PTFLOAT_SW_DIR)/pc/*.o $(PTFLOAT_SW_DIR)/ieee/*.o
+	rm -f $(SW_DIR)/pc/ptfloat.a $(SW_DIR)/pc/*.o $(SW_DIR)/ieee/*.o
 
 .PHONY: clean-ptfloat
