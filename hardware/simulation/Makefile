@@ -35,7 +35,7 @@ fpu: $(VHDR) $(VSRC) $(SRC_DIR)/iob_ptfloat_fpu_tb.v
 sticky: $(INC_DIR)/iob_ptfloat_defs.vh $(SRC_DIR)/iob_sticky.v $(SRC_DIR)/iob_mask.v $(SRC_DIR)/iob_sticky_tb.v
 	$(CC) $(CFLAGS) $(INCLUDE) $(DEFINE) $^
 
-unpack: $(INC_DIR)/iob_ptfloat_defs.vh $(SRC_DIR)/iob_ptfloat_unpack.v $(SRC_DIR)/iob_ptfloat_unpack_tb.v
+unpack: $(INC_DIR)/iob_ptfloat_defs.vh $(SRC_DIR)/iob_reg.v $(SRC_DIR)/iob_ptfloat_unpack.v $(SRC_DIR)/iob_ptfloat_unpack_tb.v
 	$(CC) $(CFLAGS) $(INCLUDE) $(DEFINE) $^
 
 clean:

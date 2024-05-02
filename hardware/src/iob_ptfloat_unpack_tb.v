@@ -11,6 +11,7 @@ module iob_ptfloat_unpack_tb;
 
    reg clk_i = 0;
    reg rst_i = 0;
+   reg cke_i = 1;
 
    reg start_i;
    wire done_o;
@@ -28,7 +29,8 @@ module iob_ptfloat_unpack_tb;
    uut
      (
       .clk_i   (clk_i),
-      .rst_i   (rst_i),
+      .arst_i  (rst_i),
+      .cke_i   (cke_i),
       .start_i (start_i),
       .done_o  (done_o),
       .data_i  (data_i),
