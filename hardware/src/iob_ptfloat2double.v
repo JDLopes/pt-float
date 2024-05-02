@@ -19,7 +19,7 @@ module iob_ptfloat2double
     input signed [`EXP_MAX_W-1:0] exp_i,
     input [`MAN_MAX_W-1:0]        man_i,
 
-    output [`FP_DP_DATA_W-:0]     fp_o,
+    output [`FP_DP_DATA_W-1:0]    fp_o
     );
 
    generate

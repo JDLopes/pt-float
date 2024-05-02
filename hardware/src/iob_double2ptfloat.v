@@ -2,7 +2,7 @@
 
 `include "iob_ptfloat_defs.vh"
 
-module iob_ptfloat_mul
+module iob_double2ptfloat
   #(
     parameter DATA_W = 32,
     parameter EW_W   = 4
