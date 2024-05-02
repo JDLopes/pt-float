@@ -1,0 +1,203 @@
+#!/usr/bin/python3
+#
+# p t f l o a t G e n
+#
+
+import sys
+import ptfloat
+
+def msb(width):
+    return 1 << (width-1)
+
+#
+# Precision
+#
+
+P = "16"
+
+def sprintf(fmt, *args):
+    lst = getFmtLst(fmt)
+    fmt = fmt.replace("%E", "%s")
+    fmt = fmt.replace("%X", "%s")
+    fmt = fmt.replace("%b", "%s")
+    for i in range(len(lst)) :
+        if (lst[i] == '%E') : args = args[:i] + (base2(args[i]),) + args[i+1:]
+        if (lst[i] == '%X') : args = args[:i] + (ptfloat.h(args[i], ptfloat.DATA_W),) + args[i+1:]
+        if (lst[i] == '%b') : args = args[:i] + (ptfloat.b(args[i], ptfloat.DATA_W),) + args[i+1:]
+    fmt = fmt.replace("%e", "%."+P+"e")
+    fmt = fmt.replace("%f", "%."+P+"f").replace("%F", "%."+P+"F")
+    return fmt % args
+
+def fprintf(fw, fmt, *args):
+    res = sprintf(fmt, *args)
+    print("%s" % res, end='', file=fw)
+    return
+
+def printf(fmt, *args):
+    fprintf(sys.stdout, fmt, *args)
+    return
+
+def getFmtLst(fmt):
+    lst = fmt.replace(',', '').replace('\n', '').replace('\r', '').split()
+    ret = []
+    for item in lst :
+        if (item.find('%') != -1) : ret.append(item)
+    return ret
+
+def dec2str(val):
+    p = 4
+    res = str(val).replace('E','e')
+    fmt = '{0:.'+str(p)+'f}'
+    return fmt.format(float(res[:res.find('.')+p+2]))+res[res.find('e'):]
+
+def base2(num_d):
+    if (num_d == 0.0) : return '0.0'
+    exp = ieee754.getDoubleExp(num_d)
+    man = ieee754.getDoubleMan(num_d)
+    new_man = 0
+    for i in range(ieee754.FP_DP_MAN_W) :
+        if ((man << i) & msb(ieee754.FP_DP_MAN_W)) : new_man += 2**(-i)
+    if (ieee754.getDoubleSign(num_d)) : new_man *= -1
+    fmt = '{0:.'+P+'f}'
+    res = fmt.format(new_man)
+    return res+'*2**'+str(exp)
+
+def processLine(line, maxLens):
+    lst = line.split()
+    wordLens = []
+    for word in lst :
+        wordLens.append(len(word))
+    for i in range(len(wordLens)) :
+        if (wordLens[i] > maxLens[i]) : maxLens[i] = wordLens[i]
+    return maxLens
+
+def findLine(num_d, output):
+    i = 1
+    line = output[i]
+    while (num_d != float(line.split()[-1])) :
+        i+=1
+        line = output[i]
+    return i
+
+def processOuput(output, sort):
+    outputSort = []
+    numLst = []
+    ret = {}
+    
+    maxLens = [0 for i in range(len(output[0].split()))]
+    for line in output :
+        maxLens = processLine(line, maxLens)
+        if (sort and line.find('#') == -1) :
+            num_d = float(line.split()[-1])
+            numLst.append(num_d)
+    if (sort) :
+        numLst.sort()
+        
+        outputSort.append(output[0])
+        for num_d in numLst :
+            idx = findLine(num_d, output)
+            outputSort.append(output[idx])
+    else :
+        outputSort = output
+    ret['output'] = outputSort
+    ret['maxLens'] = maxLens
+    return ret
+
+def writeOutput(fw, output, maxLens):
+    l = 0
+    for line in output :
+        lst = line.split()
+        if (lst[0].find('#') == -1) :
+            lst[0] = str(l)
+            l+=1
+        newLine = ''
+        for i in range(len(lst)) :
+            word = lst[i]
+            newLine += word + ' ' * (maxLens[i] - len(word) + 1)
+        fprintf(fw, "%s\n", newLine)
+    return
+
+def gen(fw, sort):
+    maxVal = ptfloat.double(ptfloat.PTFLOAT_MIN)
+    minVal = ptfloat.double(ptfloat.PTFLOAT_MAX)
+    
+    output = []
+    output.append(sprintf("# Binary ew exponent mw mantissa Subnormal value\n"))
+    
+    i = 0
+    while (i < 2**ptfloat.DATA_W) :
+        numHex = i
+        numVal = ptfloat.double(numHex)
+        upk = ptfloat.unpack(numHex)
+        man = ptfloat.cman(upk)
+        mw = ptfloat.cmw(upk['exp'])
+        sub = ptfloat.isSub(numHex)
+        
+        if (numVal > maxVal) : maxVal = numVal
+        if (numVal < minVal) : minVal = numVal
+        
+        output.append(sprintf("%d %b %d %d %d %f %d %e\n", i, numHex, upk['ew'], upk['exp'], mw, man, sub, numVal))
+        
+        i+=1
+    
+    res = processOuput(output, sort)
+    writeOutput(fw, res['output'], res['maxLens'])
+    
+    fprintf(fw, "max = %e\n", maxVal)
+    fprintf(fw, "min = %e\n", minVal)
+    fprintf(fw, "total = %d\n", i)
+    
+    return
+
+def usage(message):
+    print("usage: %s" % message)
+    print("       ./ptfloatGen -o <output file> -p <precision> -dw <data width> -eww <exponent width width> -ptfw <ptfloat width>")
+    sys.exit(1)
+
+def main():
+    global P
+    
+    # Defaults
+    data_w = 8
+    ew_w = 2
+    ptfloat_w = 32
+    
+    outputFile = ""
+    
+    sort = 0
+    
+    # Process input arguments
+    i = 1
+    while (i < len(sys.argv)) :
+        if (sys.argv[i] == "-o") :
+            outputFile = sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i] == "-p") :
+            P = sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i] == "-s") :
+            sort = 1
+        elif (sys.argv[i] == "-dw") :
+            data_w = int(sys.argv[i+1])
+            i+=1
+        elif (sys.argv[i] == "-eww") :
+            ew_w = int(sys.argv[i+1])
+            i+=1
+        elif (sys.argv[i] == "-ptfw") :
+            ptfloat_w = int(sys.argv[i+1])
+            i+=1
+        else : usage("unexpected argument '%s'" % sys.argv[i])
+        i+=1
+    
+    ptfloat.notation(data_w, ew_w, ptfloat_w)
+    
+    if (outputFile != "") : fw = open(outputFile, "w")
+    else : fw = sys.stdout
+    
+    gen(fw, sort)
+    
+    fw.close()
+    
+    sys.exit(0)
+
+if __name__ == "__main__" : main()
