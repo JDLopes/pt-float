@@ -38,6 +38,9 @@ sticky: $(INC_DIR)/iob_ptfloat_defs.vh $(SRC_DIR)/iob_sticky.v $(SRC_DIR)/iob_ma
 unpack: $(INC_DIR)/iob_ptfloat_defs.vh $(SRC_DIR)/iob_reg.v $(SRC_DIR)/iob_ptfloat_unpack.v $(SRC_DIR)/iob_ptfloat_unpack_tb.v
 	$(CC) $(CFLAGS) $(INCLUDE) $(DEFINE) $^
 
+ptfloat2double: $(INC_DIR)/iob_ptfloat_defs.vh $(INC_DIR)/iob_ieee754_defs.vh $(SRC_DIR)/iob_mask.v $(SRC_DIR)/iob_sticky.v $(SRC_DIR)/iob_cls.v $(SRC_DIR)/iob_norm.v $(SRC_DIR)/iob_ptfloat2double.v $(SRC_DIR)/iob_ptfloat2double_tb.v
+	$(CC) $(CFLAGS) $(INCLUDE) $(DEFINE) $^
+
 clean:
 	rm -f a.out *.vcd *~
 
