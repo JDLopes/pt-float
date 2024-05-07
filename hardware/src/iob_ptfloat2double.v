@@ -40,9 +40,8 @@ module iob_ptfloat2double
          wire [`EXP_MAX_W:0]        shift;
          assign shift = {(`EXP_MAX_W+1){exp_int[`EXP_MAX_W]}} ^ exp_int + {{`EXP_MAX_W{1'b0}}, exp_int[`EXP_MAX_W]};
 
-         wire signed [`FP_DP_MAN_W-1:0] man_shift_;
-         wire signed [`FP_DP_MAN_W-1:0] man_int_;
-         assign man_int_ = {man_int, 3'd0};
+         wire signed [`FP_DP_MAN_W+2:0] man_int_, man_shift_;
+         assign man_int_   = {man_int, 3'd0};
          assign man_shift_ = man_int_ >>> shift;
 
          wire                           man_lsb, guard_bit, round_bit;
@@ -66,10 +65,10 @@ module iob_ptfloat2double
          wire                           round;
          assign round = guard_bit & (man_lsb | round_bit | sticky_bit);
 
-         assign man_shift = man_shift_ + round;
+         assign man_shift = man_shift_[`FP_DP_MAN_W+2:3] + round;
 
-         wire [`EXP_MAX_W:0]        exp_norm_;
-         wire [`FP_DP_MAN_W-1:0]    man_norm_;
+         wire [`EXP_MAX_W:0]            exp_norm_;
+         wire [`FP_DP_MAN_W-1:0]        man_norm_;
          iob_norm
            #(
              .EXP_W  (`EXP_MAX_W+1),
@@ -83,7 +82,7 @@ module iob_ptfloat2double
             .man_o (man_norm_)
             );
 
-         wire                       infinity;
+         wire                           infinity;
          assign infinity = (exp_norm_ > `FP_DP_EXP_MAX)? 1'b1: 1'b0;
 
          assign exp_norm = infinity? `FP_DP_EXP_INF: exp_norm_[`FP_DP_EXP_W-1:0];
@@ -96,9 +95,8 @@ module iob_ptfloat2double
          wire [`FP_DP_EXP_W:0]        shift;
          assign shift = {(`FP_DP_EXP_W+1){exp_int[`FP_DP_EXP_W]}} ^ exp_int + {{`FP_DP_EXP_W{1'b0}}, exp_int[`FP_DP_EXP_W]};
 
-         wire signed [`FP_DP_MAN_W-1:0] man_shift_;
-         wire signed [`FP_DP_MAN_W-1:0] man_int_;
-         assign man_int_ = {man_int, 3'd0};
+         wire signed [`FP_DP_MAN_W+2:0] man_int_, man_shift_;
+         assign man_int_   = {man_int, 3'd0};
          assign man_shift_ = man_int_ >>> shift;
 
          wire                           man_lsb, guard_bit, round_bit;
@@ -122,7 +120,7 @@ module iob_ptfloat2double
          wire                           round;
          assign round = guard_bit & (man_lsb | round_bit | sticky_bit);
 
-         assign man_shift = man_shift_ + round;
+         assign man_shift = man_shift_[`FP_DP_MAN_W+2:3] + round;
 
          wire [`FP_DP_EXP_W:0]          exp_norm_;
          wire [`FP_DP_MAN_W-1:0]        man_norm_;
