@@ -44,7 +44,7 @@ module iob_ptfloat_unpack
    wire [`MAN_MAX_W-1:0]    man_o_int;
    assign man_o_int = sub? {f[`F_MAX_W-1], f}: {~f[`F_MAX_W-1], f};
 
-   //  pipeline stage 1
+   // pipeline stage 1
    iob_reg
      #(
        .DATA_W  (`EXP_MAX_W),

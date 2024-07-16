@@ -66,7 +66,7 @@ module iob_ptfloat_pack
 `else
    assign exp_sub = exp_diff[`EXP_MAX_W+1]? exp_i: {2'b11, `EXP_MIN};
    assign man_sub = exp_diff[`EXP_MAX_W+1]? man_i: 1'b0;
-   assign underflow = exp_diff[`EXP_MAX_W+1];
+   assign underflow = ~exp_diff[`EXP_MAX_W+1];
 `endif
 
    // pipeline stage 1
