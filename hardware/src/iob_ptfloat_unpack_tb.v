@@ -43,6 +43,7 @@ module iob_ptfloat_unpack_tb;
       $dumpfile("iob_ptfloat_unpack.vcd");
       $dumpvars();
 
+      start_i = 0;
       data_i = 0;
 
       #(clk_per+1);
@@ -52,6 +53,7 @@ module iob_ptfloat_unpack_tb;
       rst_i = 0;
 
       #clk_per;
+      start_i = 1;
       data_i = 'h0000000f;
 
       #clk_per;
@@ -71,6 +73,9 @@ module iob_ptfloat_unpack_tb;
 
       #clk_per;
       data_i = 'h00000000;
+
+      #clk_per;
+      start_i = 0;
 
       #clk_per $finish;
    end
