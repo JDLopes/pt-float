@@ -38,7 +38,7 @@ module iob_ptfloat_unpack
 
    wire [`EXP_MAX_W-1:0]    exp_o_int;
    assign exp_o_int = ~|ew? {`EXP_MAX_W{1'b0}}:
-                       sub? exp_int + 1'b1:
+                       sub? `EXP_MIN:
                             exp_int;
 
    wire [`MAN_MAX_W-1:0]    man_o_int;
