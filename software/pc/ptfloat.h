@@ -129,8 +129,8 @@ class Ptfloat {
         }
 
         Ptfloat operator-() {
-            Ptfloat res = 0.0;
-            res.val = ptfloat_sub(res.val, val, &overflow);
+            Ptfloat res;
+            res.val = ptfloat_neg(val, &overflow);
             return res;
         }
 
@@ -306,75 +306,75 @@ class Ptfloat {
 // More arithmetic operators
 //
 
-inline Ptfloat operator+(double d, Ptfloat u) { return (Ptfloat)d + u; }
-inline Ptfloat operator+(float f, Ptfloat u) { return (Ptfloat)f + u; }
-inline Ptfloat operator+(long unsigned int i, Ptfloat u) { return (Ptfloat)i + u; }
-inline Ptfloat operator+(int i, Ptfloat u) { return (Ptfloat)i + u; }
-inline Ptfloat operator+(unsigned char i, Ptfloat u) { return (Ptfloat)i + u; }
+inline Ptfloat operator+(double d, Ptfloat ptf) { return (Ptfloat)d + ptf; }
+inline Ptfloat operator+(float f, Ptfloat ptf) { return (Ptfloat)f + ptf; }
+inline Ptfloat operator+(long unsigned int i, Ptfloat ptf) { return (Ptfloat)i + ptf; }
+inline Ptfloat operator+(int i, Ptfloat ptf) { return (Ptfloat)i + ptf; }
+inline Ptfloat operator+(unsigned char i, Ptfloat ptf) { return (Ptfloat)i + ptf; }
 
-inline Ptfloat operator-(double d, Ptfloat u) { return (Ptfloat)d - u; }
-inline Ptfloat operator-(float f, Ptfloat u) { return (Ptfloat)f - u; }
-inline Ptfloat operator-(long unsigned int i, Ptfloat u) { return (Ptfloat)i - u; }
-inline Ptfloat operator-(int i, Ptfloat u) { return (Ptfloat)i - u; }
-inline Ptfloat operator-(unsigned char i, Ptfloat u) { return (Ptfloat)i - u; }
+inline Ptfloat operator-(double d, Ptfloat ptf) { return (Ptfloat)d - ptf; }
+inline Ptfloat operator-(float f, Ptfloat ptf) { return (Ptfloat)f - ptf; }
+inline Ptfloat operator-(long unsigned int i, Ptfloat ptf) { return (Ptfloat)i - ptf; }
+inline Ptfloat operator-(int i, Ptfloat ptf) { return (Ptfloat)i - ptf; }
+inline Ptfloat operator-(unsigned char i, Ptfloat ptf) { return (Ptfloat)i - ptf; }
 
-inline Ptfloat operator*(double d, Ptfloat u) { return (Ptfloat)d * u; }
-inline Ptfloat operator*(float f, Ptfloat u) { return (Ptfloat)f * u; }
-inline Ptfloat operator*(long unsigned int i, Ptfloat u) { return (Ptfloat)i * u; }
-inline Ptfloat operator*(int i, Ptfloat u) { return (Ptfloat)i * u; }
-inline Ptfloat operator*(unsigned char i, Ptfloat u) { return (Ptfloat)i * u; }
+inline Ptfloat operator*(double d, Ptfloat ptf) { return (Ptfloat)d * ptf; }
+inline Ptfloat operator*(float f, Ptfloat ptf) { return (Ptfloat)f * ptf; }
+inline Ptfloat operator*(long unsigned int i, Ptfloat ptf) { return (Ptfloat)i * ptf; }
+inline Ptfloat operator*(int i, Ptfloat ptf) { return (Ptfloat)i * ptf; }
+inline Ptfloat operator*(unsigned char i, Ptfloat ptf) { return (Ptfloat)i * ptf; }
 
-inline Ptfloat operator/(double d, Ptfloat u) { return (Ptfloat)d / u; }
-inline Ptfloat operator/(float f, Ptfloat u) { return (Ptfloat)f / u; }
-inline Ptfloat operator/(long unsigned int i, Ptfloat u) { return (Ptfloat)i / u; }
-inline Ptfloat operator/(int i, Ptfloat u) { return (Ptfloat)i / u; }
-inline Ptfloat operator/(unsigned char i, Ptfloat u) { return (Ptfloat)i / u; }
+inline Ptfloat operator/(double d, Ptfloat ptf) { return (Ptfloat)d / ptf; }
+inline Ptfloat operator/(float f, Ptfloat ptf) { return (Ptfloat)f / ptf; }
+inline Ptfloat operator/(long unsigned int i, Ptfloat ptf) { return (Ptfloat)i / ptf; }
+inline Ptfloat operator/(int i, Ptfloat ptf) { return (Ptfloat)i / ptf; }
+inline Ptfloat operator/(unsigned char i, Ptfloat ptf) { return (Ptfloat)i / ptf; }
 
 //
 // More comparator operators
 //
 
-inline bool operator<(double d, Ptfloat u) { return (Ptfloat)d < u; }
-inline bool operator<(float f, Ptfloat u) { return (Ptfloat)f < u; }
-inline bool operator<(int i, Ptfloat u) { return (Ptfloat)i < u; }
-inline bool operator<(Ptfloat u, double d) { return u < (Ptfloat)d; }
-inline bool operator<(Ptfloat u, float f) { return u < (Ptfloat)f; }
-inline bool operator<(Ptfloat u, int i) { return u < (Ptfloat)i; }
+inline bool operator<(double d, Ptfloat ptf) { return (Ptfloat)d < ptf; }
+inline bool operator<(float f, Ptfloat ptf) { return (Ptfloat)f < ptf; }
+inline bool operator<(int i, Ptfloat ptf) { return (Ptfloat)i < ptf; }
+inline bool operator<(Ptfloat ptf, double d) { return ptf < (Ptfloat)d; }
+inline bool operator<(Ptfloat ptf, float f) { return ptf < (Ptfloat)f; }
+inline bool operator<(Ptfloat ptf, int i) { return ptf < (Ptfloat)i; }
 
-inline bool operator<=(double d, Ptfloat u) { return (Ptfloat)d <= u; }
-inline bool operator<=(float f, Ptfloat u) { return (Ptfloat)f <= u; }
-inline bool operator<=(int i, Ptfloat u) { return (Ptfloat)i <= u; }
-inline bool operator<=(Ptfloat u, double d) { return u <= (Ptfloat)d; }
-inline bool operator<=(Ptfloat u, float f) { return u <= (Ptfloat)f; }
-inline bool operator<=(Ptfloat u, int i) { return u <= (Ptfloat)i; }
+inline bool operator<=(double d, Ptfloat ptf) { return (Ptfloat)d <= ptf; }
+inline bool operator<=(float f, Ptfloat ptf) { return (Ptfloat)f <= ptf; }
+inline bool operator<=(int i, Ptfloat ptf) { return (Ptfloat)i <= ptf; }
+inline bool operator<=(Ptfloat ptf, double d) { return ptf <= (Ptfloat)d; }
+inline bool operator<=(Ptfloat ptf, float f) { return ptf <= (Ptfloat)f; }
+inline bool operator<=(Ptfloat ptf, int i) { return ptf <= (Ptfloat)i; }
 
-inline bool operator>(double d, Ptfloat u) { return (Ptfloat)d > u; }
-inline bool operator>(float f, Ptfloat u) { return (Ptfloat)f > u; }
-inline bool operator>(int i, Ptfloat u) { return (Ptfloat)i > u; }
-inline bool operator>(Ptfloat u, double d) { return u > (Ptfloat)d; }
-inline bool operator>(Ptfloat u, float f) { return u > (Ptfloat)f; }
-inline bool operator>(Ptfloat u, int i) { return u > (Ptfloat)i; }
+inline bool operator>(double d, Ptfloat ptf) { return (Ptfloat)d > ptf; }
+inline bool operator>(float f, Ptfloat ptf) { return (Ptfloat)f > ptf; }
+inline bool operator>(int i, Ptfloat ptf) { return (Ptfloat)i > ptf; }
+inline bool operator>(Ptfloat ptf, double d) { return ptf > (Ptfloat)d; }
+inline bool operator>(Ptfloat ptf, float f) { return ptf > (Ptfloat)f; }
+inline bool operator>(Ptfloat ptf, int i) { return ptf > (Ptfloat)i; }
 
-inline bool operator>=(double d, Ptfloat u) { return (Ptfloat)d >= u; }
-inline bool operator>=(float f, Ptfloat u) { return (Ptfloat)f >= u; }
-inline bool operator>=(int i, Ptfloat u) { return (Ptfloat)i >= u; }
-inline bool operator>=(Ptfloat u, double d) { return u >= (Ptfloat)d; }
-inline bool operator>=(Ptfloat u, float f) { return u >= (Ptfloat)f; }
-inline bool operator>=(Ptfloat u, int i) { return u >= (Ptfloat)i; }
+inline bool operator>=(double d, Ptfloat ptf) { return (Ptfloat)d >= ptf; }
+inline bool operator>=(float f, Ptfloat ptf) { return (Ptfloat)f >= ptf; }
+inline bool operator>=(int i, Ptfloat ptf) { return (Ptfloat)i >= ptf; }
+inline bool operator>=(Ptfloat ptf, double d) { return ptf >= (Ptfloat)d; }
+inline bool operator>=(Ptfloat ptf, float f) { return ptf >= (Ptfloat)f; }
+inline bool operator>=(Ptfloat ptf, int i) { return ptf >= (Ptfloat)i; }
 
-inline bool operator==(double d, Ptfloat u) { return (Ptfloat)d == u; }
-inline bool operator==(float f, Ptfloat u) { return (Ptfloat)f == u; }
-inline bool operator==(int i, Ptfloat u) { return (Ptfloat)i == u; }
-inline bool operator==(Ptfloat u, double d) { return u == (Ptfloat)d; }
-inline bool operator==(Ptfloat u, float f) { return u == (Ptfloat)f; }
-inline bool operator==(Ptfloat u, int i) { return u == (Ptfloat)i; }
+inline bool operator==(double d, Ptfloat ptf) { return (Ptfloat)d == ptf; }
+inline bool operator==(float f, Ptfloat ptf) { return (Ptfloat)f == ptf; }
+inline bool operator==(int i, Ptfloat ptf) { return (Ptfloat)i == ptf; }
+inline bool operator==(Ptfloat ptf, double d) { return ptf == (Ptfloat)d; }
+inline bool operator==(Ptfloat ptf, float f) { return ptf == (Ptfloat)f; }
+inline bool operator==(Ptfloat ptf, int i) { return ptf == (Ptfloat)i; }
 
-inline bool operator!=(double d, Ptfloat u) { return (Ptfloat)d != u; }
-inline bool operator!=(float f, Ptfloat u) { return (Ptfloat)f != u; }
-inline bool operator!=(int i, Ptfloat u) { return (Ptfloat)i != u; }
-inline bool operator!=(Ptfloat u, double d) { return u != (Ptfloat)d; }
-inline bool operator!=(Ptfloat u, float f) { return u != (Ptfloat)f; }
-inline bool operator!=(Ptfloat u, int i) { return u != (Ptfloat)i; }
+inline bool operator!=(double d, Ptfloat ptf) { return (Ptfloat)d != ptf; }
+inline bool operator!=(float f, Ptfloat ptf) { return (Ptfloat)f != ptf; }
+inline bool operator!=(int i, Ptfloat ptf) { return (Ptfloat)i != ptf; }
+inline bool operator!=(Ptfloat ptf, double d) { return ptf != (Ptfloat)d; }
+inline bool operator!=(Ptfloat ptf, float f) { return ptf != (Ptfloat)f; }
+inline bool operator!=(Ptfloat ptf, int i) { return ptf != (Ptfloat)i; }
 
 //
 // Math functions
@@ -407,22 +407,22 @@ inline Ptfloat *memset(Ptfloat *ptr, int val, size_t n) {
   return ptr;
 }
 
-inline void *memcpy(Ptfloat *u_ptr, const double *fp_ptr, size_t n) {
+inline void *memcpy(Ptfloat *ptf_ptr, const double *fp_ptr, size_t n) {
   n /= sizeof(double);
-  while (n--) u_ptr[n] = (Ptfloat)fp_ptr[n];
-  return (void *)u_ptr;
+  while (n--) ptf_ptr[n] = (Ptfloat)fp_ptr[n];
+  return (void *)ptf_ptr;
 }
 
-inline void *memcpy(Ptfloat *u_ptr, const float *fp_ptr, size_t n) {
+inline void *memcpy(Ptfloat *ptf_ptr, const float *fp_ptr, size_t n) {
   n /= sizeof(float);
-  while (n--) u_ptr[n] = (Ptfloat)fp_ptr[n];
-  return (void *)u_ptr;
+  while (n--) ptf_ptr[n] = (Ptfloat)fp_ptr[n];
+  return (void *)ptf_ptr;
 }
 
-inline void *memcpy(Ptfloat *u_ptr, const int *i_ptr, size_t n) {
+inline void *memcpy(Ptfloat *ptf_ptr, const int *i_ptr, size_t n) {
   n /= sizeof(int);
-  while (n--) u_ptr[n] = (Ptfloat)i_ptr[n];
-  return (void *)u_ptr;
+  while (n--) ptf_ptr[n] = (Ptfloat)i_ptr[n];
+  return (void *)ptf_ptr;
 }
 
 inline void *calloc_ptf(size_t nitems, size_t size) {
@@ -479,11 +479,11 @@ inline int vfprintf_ptf(FILE *fp, const char *fmt, va_list args) {
       fmt_ptf[len-1] == 'e' ||
       fmt_ptf[len-1] == 'g') {
     union {
-      Ptfloat u;
+      Ptfloat ptf;
       int   i;
     } conv = { .i = va_arg(args, int)};
     char buf[1024];
-    ret = vsnprintf_ptf(buf, 1023, fmt_ptf, (double)conv.u);
+    ret = vsnprintf_ptf(buf, 1023, fmt_ptf, (double)conv.ptf);
     fputs(buf, fp);
   } else {
     ret = vfprintf(fp, fmt_ptf, args);
@@ -529,10 +529,10 @@ inline int vsscanf_ptf(char *str, const char *fmt, va_list args) {
   if (fmt_ptf[len-1] == 'f' ||
       fmt_ptf[len-1] == 'e' ||
       fmt_ptf[len-1] == 'g') {
-    Ptfloat *u_ptr = (Ptfloat *)va_arg(args, int*);
+    Ptfloat *ptf_ptr = (Ptfloat *)va_arg(args, int*);
     char buf[1024];
     sgetnw(buf, 1024, (char *)str);
-    *u_ptr = (Ptfloat) atof(buf);
+    *ptf_ptr = (Ptfloat) atof(buf);
     ret = 1;
   } else {
     ret = vsscanf(str, fmt_ptf, args);

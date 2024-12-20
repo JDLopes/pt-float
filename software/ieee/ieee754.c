@@ -64,6 +64,7 @@ int32_t double_get_exp(double val) {
     int64_t i;
   } conv = { .d = val };
   int32_t exp = (conv.i >> FP_DP_F_W) & MASK(FP_DP_EXP_W);
+  if (!exp) exp++;
   exp -= FP_DP_BIAS;
   return exp;
 }
@@ -91,11 +92,14 @@ int fprintf_d(FILE *fp, const char *name, double val) {
 }
 
 char base2_str[29];
+char zero_str[4] = "0.0";
+char inf_str[4] = "Inf";
+char nan_str[4] = "NaN";
 
 char *base2(double num_d) {
-  if (num_d == 0.0) return "0.0";
-  if (double_is_inf(num_d)) return "Inf";
-  if (double_is_nan(num_d)) return "NaN";
+  if (num_d == 0.0) return zero_str;
+  if (double_is_inf(num_d)) return inf_str;
+  if (double_is_nan(num_d)) return nan_str;
   int32_t exp = double_get_exp(num_d);
   int64_t man = double_get_man(num_d);
   double man_b10 = man * pow(2, -FP_DP_F_W);
@@ -161,6 +165,7 @@ int32_t float_get_exp(float val) {
     int32_t i;
   } conv = { .f = val };
   int32_t exp = (conv.i >> FP_SP_F_W) & MASK(FP_SP_EXP_W);
+  if (!exp) exp++;
   exp -= FP_SP_BIAS;
   return exp;
 }
